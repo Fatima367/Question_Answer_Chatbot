@@ -28,9 +28,3 @@ async def handle_message(message: cl.Message):
     response_text = response.text if hasattr(response, "text") else " "
 
     await cl.Message(content=response_text).send()
-
-
-port = int(os.environ.get("PORT", 8000))
-
-if __name__ == "__main__":
-    cl.run(host="0.0.0.0", port=port)
