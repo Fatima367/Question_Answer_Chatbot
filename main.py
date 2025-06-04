@@ -17,14 +17,30 @@ model = genai.GenerativeModel(
 async def chat_start():
     await cl.Message("Hello! This is a simple Question/Answer Chatbot created by Fatima.").send()
     await cl.Message("How can I help you?").send()
+
+    """Setting up chat history when user connects"""
+    cl.user_session.set("chat_history", [])
     
+
 @cl.on_message
 async def handle_message(message: cl.Message):
 
-    prompt = message.content
+    history = cl.user_session.get("chat_history") or []
 
-    response = model.generate_content(prompt)
+    history.append({"role":"user", "content": message.content})
 
-    response_text = response.text if hasattr(response, "text") else " "
+    prompt = "\n".join([f"{msg["role"]}:{msg["content"]}" for msg in history])
+
+    try:
+        response = model.generate_content(prompt)
+
+        response_text = response.text if hasattr(response, "text") else " "
+
+    except Exception as e:
+        response_text = f"Error {str(e)}"
 
     await cl.Message(content=response_text).send()
+
+    history.append({"role":"model", "content": response_text})
+
+    cl.user_session.set("chat_history", history)
