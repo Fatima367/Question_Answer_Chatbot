@@ -1,1 +1,1 @@
-Simple Chatbot made with chainlit and google gemini
+Simple Chatbot made with chainlit and google gemini.
